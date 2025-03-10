@@ -1,25 +1,27 @@
-def main(path_to_file):
-    with open(path_to_file) as f:
-        file_contents = f.read()
-        wordcounter = word_count(file_contents)
-        charcounter = char_count(file_contents)
-        print(f"--- Begin report of {path_to_file} ---")
-        print(f"{wordcounter} words found in the document")
-        for i in charcounter:
-            if i.isalpha():
-                print(f'The \'{i}\' character was found {charcounter[i]} times')
+import sys
+from stats import count_words_in_string, count_letters_in_string_insensitive,sorted_list_of_dicts_from_dict
 
-def word_count(s:str) -> int:
-    return len(s.split())
-
-def char_count(s:str)-> dict[str,int]:
-    charcount_dict = {}
-    for c in s.lower():
-        if charcount_dict.get(c):
-            charcount_dict[c] +=1
-        else:
-            charcount_dict[c] = 1
-    return charcount_dict
+def get_book_text(path):
+	with open(path) as f:
+		book_content = f.read()
+		return book_content
 
 
-main("books/frankenstein.txt")
+
+def main():
+	if len(sys.argv)<2:
+		print("Missing Path to book")
+		return
+	book_content = get_book_text(sys.argv[1])
+	print("============ BOOKBOT ============")
+	print(f"Analyzing book found at {sys.argv[1]}...")
+	print("----------- Word Count ----------")
+	print(f"Found {count_words_in_string(book_content)} total words")
+	print("--------- Character Count -------")
+	letters_d = count_letters_in_string_insensitive(book_content)
+	sorted_d = sorted_list_of_dicts_from_dict(letters_d)
+	for entry in sorted_d:
+		if entry["char"].isalpha():
+			print(f"{entry["char"]}: {entry["count"]}")
+if __name__ == '__main__':
+	main()
